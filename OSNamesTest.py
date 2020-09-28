@@ -4,6 +4,7 @@ KEY = "8sxgVXPjDNz4gW6FtBaATGVgqdWBqAEQ"
 
 
 def find(search_term, feature):
+    feature_list = []
     base = "https://api.os.uk/search/names/v1/"
     find_uri = base + "find?query=" + search_term + "&key=" + KEY
     response = requests.get(find_uri)
@@ -11,8 +12,9 @@ def find(search_term, feature):
     for results in data["results"]:
         print(results)
         if results["GAZETTEER_ENTRY"]["LOCAL_TYPE"] == feature:
-            return search_term + " has a " + feature
-    return search_term + " does not have a " + feature
+            feature_list.append(results["GAZETTEER_ENTRY"])
+    return search_term + " has " + str(len(feature_list)) + " " + feature + "/s"
+    #return search_term + " does not have a " + feature
 
 
 def to_national_grid(lat_long):
@@ -24,17 +26,15 @@ def to_national_grid(lat_long):
     return round(data["EASTING"]), round(data["NORTHING"])
 
 
-def nearest(coords, isBNG):
+def nearest(coords, isBNG, local_type, radius):
     if isBNG:
         BNG_coords = coords
     else:
         BNG_coords = to_national_grid(coords)
-    URI = f"https://api.os.uk/search/names/v1/nearest?point={BNG_coords[0]},{BNG_coords[1]}&radius=1000&key=" + KEY
+    URI = f"https://api.os.uk/search/names/v1/nearest?point={BNG_coords[0]},{BNG_coords[1]}&radius={radius}&fq=LOCAL_TYPE:{local_type}&key=" + KEY
     response = requests.get(URI)
     print(response.json())
 
 
 if __name__ == "__main__":
-    #print(find("Portsmouth", "Harbour"))
-    to_national_grid((52.342622, -0.074505))
-    nearest((52.342622, -0.074505), False)
+    nearest((52.174702, 0.141707), False, "Hospital", 1000)
