@@ -12,7 +12,7 @@ def get_capabilities():
 
 def get_feature():
     BASE = "https://api.os.uk/features/v1/wfs?service=wfs&version=2.0.0&request=GetFeature&count=100&key="
-    response = requests.get(BASE)
+    response = requests.get(BASE + KEY)
 
 
 ogc_filter = "<ogc:Filter>"
